@@ -205,3 +205,29 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# --- Drishyamitra Project Specifics ---
+
+# 1. Private User Uploads (NEVER upload these to GitHub)
+backend/uploads/
+uploads/
+
+# 2. Database (Protect your local data)
+backend/*.db
+*.db
+drishyamitra.db
+
+# 3. Node.js (Frontend dependencies - huge folder)
+frontend/node_modules/
+node_modules/
+frontend/build/
+.eslintcache
+
+# 4. DeepFace/AI Models (Prevents re-uploading downloaded AI weights)
+.deepface/
+backend/.deepface/
+
+# 5. OS Specific
+Thumbs.db
+.DS_Store
