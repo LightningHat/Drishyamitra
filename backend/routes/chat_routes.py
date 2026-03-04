@@ -4,16 +4,19 @@ from services.chatbot_service import get_chatbot_response
 
 chat_bp = Blueprint('chat', __name__)
 
-@chat_bp.route('/api/chat', methods=['POST'])
+@chat_bp.route('/api/chat/ask', methods=['POST'])
 @jwt_required()
-def chat():
+def ask_assistant():
     data = request.get_json()
     user_query = data.get('query')
     
     if not user_query:
-        return jsonify({"error": "No query provided"}), 400
+        return jsonify({"error": "Query required"}), 400
 
-    # Get response from Groq/Gemini
+    # Process via Groq/Gemini Service
     response = get_chatbot_response(user_query)
     
-    return jsonify({"response": response}), 200
+    return jsonify({
+        "status": "success",
+        "answer": response
+    }), 200
