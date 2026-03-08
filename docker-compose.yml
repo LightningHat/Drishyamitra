@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: drishyamitra
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - drishyamitra_net
+
+  redis:
+    image: redis:alpine
+    networks:
+      - drishyamitra_net
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/drishyamitra
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    volumes:
+      - photo_storage:/app/data/uploads
+      - deepface_weights:/root/.deepface/weights
+    depends_on:
+      - db
+      - redis
+    networks:
+      - drishyamitra_net
+
+  celery_worker:
+    build: ./backend
+    command: celery -A tasks worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/drishyamitra
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - photo_storage:/app/data/uploads
+      - deepface_weights:/root/.deepface/weights
+    depends_on:
+      - redis
+    networks:
+      - drishyamitra_net
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - drishyamitra_net
+
+networks:
+  drishyamitra_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  photo_storage:
+  deepface_weights:
