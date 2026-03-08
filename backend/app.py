@@ -5,11 +5,11 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-# Configuration & DB
+# Config & DB
 from config import Config, init_db_engine
 from models.db import db
 
-# Models (Ensures they are recognized by Alembic)
+# Models
 from models.user import User
 from models.photo import Photo
 from models.face import Face
@@ -28,14 +28,14 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    
-    # Initialize Extensions
+
+    # Extensions
     CORS(app)
     db.init_app(app)
     migrate = Migrate(app, db)
     jwt = JWTManager(app)
 
-    # Register Modular Blueprints
+    # Registering Modular Blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(photo_bp)
     app.register_blueprint(face_bp)
@@ -43,7 +43,7 @@ def create_app():
     app.register_blueprint(delivery_bp)
 
     with app.app_context():
-        # Requirement: Confirm initialization logging
+        # Requirement: Log initialization success
         init_db_engine()
         
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -51,7 +51,7 @@ def create_app():
 
     @app.route('/api/health')
     def health():
-        return jsonify({"status": "active", "message": "Drishyamitra API is secure"}), 200
+        return jsonify({"status": "active", "milestone": "3.5 complete"}), 200
 
     return app
 

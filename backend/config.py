@@ -15,20 +15,20 @@ class Config:
     # --- Security & JWT Settings ---
     SECRET_KEY = os.getenv('SECRET_KEY', 'drishyamitra-dev-key-7788')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-super-secret-key-9900')
-    
-    # Requirement: Token expiration and refresh policies
     JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = datetime.timedelta(days=30)
     
-    # --- Upload Settings ---
+    # --- Celery & Redis Settings ---
+    # Requirement: Redis for message brokering
+    CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    
+    # --- Storage Settings ---
     UPLOAD_FOLDER = os.path.join(os.getcwd(), 'data', 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB limit
 
 def init_db_engine():
-    """
-    Initializes the SQLAlchemy engine manually to verify connection 
-    and log the process as per project requirements.
-    """
+    """Manual engine initialization for logging verification."""
     uri = Config.SQLALCHEMY_DATABASE_URI
     try:
         engine = create_engine(uri)
